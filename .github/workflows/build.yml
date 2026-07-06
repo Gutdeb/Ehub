@@ -1,15 +1,10 @@
-name: Build APK
+name: Build Ehub APK
 
 on:
   push:
     branches: [main, master]
-    paths:
-      - 'emailhub-android/**'
-      - '.github/workflows/build-apk.yml'
   pull_request:
     branches: [main, master]
-    paths:
-      - 'emailhub-android/**'
   workflow_dispatch:
   release:
     types: [published]
@@ -18,9 +13,6 @@ jobs:
   build:
     name: Build Debug & Release APK
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: emailhub-android
 
     steps:
       - name: Checkout
@@ -41,9 +33,6 @@ jobs:
       - name: Create local.properties with SDK path
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-      - name: Grant execute permission for gradlew (if present)
-        run: chmod +x ./gradlew || true
-
       - name: Build debug APK
         run: gradle assembleDebug --no-daemon --stacktrace
 
@@ -53,15 +42,15 @@ jobs:
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: emailhub-debug-apk
-          path: emailhub-android/app/build/outputs/apk/debug/*.apk
+          name: Ehub-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
           retention-days: 30
 
       - name: Upload release APK
         uses: actions/upload-artifact@v4
         with:
-          name: emailhub-release-apk-unsigned
-          path: emailhub-android/app/build/outputs/apk/release/*.apk
+          name: Ehub-release-apk-unsigned
+          path: app/build/outputs/apk/release/*.apk
           retention-days: 30
 
       - name: Attach APK to GitHub Release
@@ -69,6 +58,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            emailhub-android/app/build/outputs/apk/debug/*.apk
-            emailhub-android/app/build/outputs/apk/release/*.apk
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/release/*.apk
             
